@@ -1,0 +1,258 @@
+---
+title: "Are the IRAP trial types 'functionally independent'?"
+author: "Ian Hussey"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    theme: flatly
+    toc: yes
+    toc_float: yes
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE)
+```
+
+```{r}
+
+set.seed(42)
+
+# dependencies
+library(tidyverse)
+library(metafor)
+library(knitr)
+library(kableExtra)
+library(ggstance)
+library(scales) 
+library(janitor)
+
+# function to round all numeric vars in a data frame
+round_df <- function(df, n_digits = 3) {
+  df %>% mutate_if(is.numeric, janitor::round_half_up, digits = n_digits)
+}
+
+# create directory needed to save output
+dir.create("plots")
+
+```
+
+# Data 
+
+```{r}
+
+data_scores <- read_csv("../../data/processed/data_scored.csv") |>
+  # exclude follow up time-points and outlier participants
+  filter(timepoint == "baseline" & rt_outlier == FALSE) |>
+  # select only variables of interest
+  select(id = unique_id,
+         domain, 
+         tt1 = D_tt1,
+         tt2 = D_tt2,
+         tt3 = D_tt3,
+         tt4 = D_tt4)
+
+```
+
+# Descriptives
+
+```{r}
+
+data_scores |>
+  count() |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+
+data_scores |>
+  count(domain) |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+
+```
+
+# Calculate correlations between the trial types
+
+```{r}
+
+data_correlations <- data_scores |>
+  select(-id) |>
+  group_by(domain) |>
+  summarize(tt1_tt2 = cor(tt1, tt2),
+            tt1_tt3 = cor(tt1, tt3),
+            tt1_tt4 = cor(tt1, tt4),
+            tt2_tt3 = cor(tt2, tt3),
+            tt2_tt4 = cor(tt2, tt4),
+            tt3_tt4 = cor(tt3, tt4)) |>
+  pivot_longer(cols = -domain,
+               names_to = "trial_types",
+               values_to = "r")
+
+data_n <- data_scores |>
+  select(-id) |>
+  count(domain) 
+
+# combine dfs
+data_correlations_and_n <- data_correlations |>
+  left_join(data_n, by = "domain")
+
+```
+
+### Calculate 95% Confidence Intervals on correlations
+
+```{r fig.height=12, fig.width=6}
+
+# calculate variances
+# apply fischer's r-to-z transformations
+data_effect_sizes <- data_correlations_and_n |>
+  escalc(measure = "ZCOR", 
+         ri = r, 
+         ni = n,
+         data = _)
+
+# calculate CIs
+data_significance <- data_effect_sizes |>
+  mutate(se = sqrt(vi),
+         ci_lower = transf.ztor(yi - se*1.96),
+         ci_upper = transf.ztor(yi + se*1.96),
+         sig = ifelse((r > 0 & ci_lower > 0) | (r < 0 & ci_upper < 0), TRUE, FALSE),
+         sig_label = ifelse(sig, "p < .05", "p > .05"))
+
+p_cis <- 
+  ggplot(data_significance, aes(r, fct_rev(domain), color = sig_label, group = trial_types)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(position = position_dodge(width = 0.75)) +
+  ggstance::geom_linerangeh(aes(xmin = ci_lower, xmax = ci_upper), position = position_dodge(width = 0.75)) +
+  scale_color_viridis_d(begin = 0.3, end = 0.7, direction = -1) +
+  scale_x_continuous(breaks = breaks_width(0.2)) +
+  theme_classic() +
+  labs(x = expression(paste("Pearson's ", italic("r"))),
+       y = element_blank()) +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+
+p_cis
+
+ggsave("plots/p_correlations_with_confidence_intervals.pdf",
+       plot = p_cis,
+       width = 6,
+       height = 12,
+       units = "in")
+
+data_significance |>
+  summarize(percent_significant_correlations = janitor::round_half_up(mean(sig*100), 1)) |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+
+data_significance |>
+  group_by(domain) |>
+  summarize(sig = max(sig)) |>
+  ungroup() |>
+  summarize(percent_domains_with_one_or_more_significant_correlations = janitor::round_half_up(mean(sig*100), 1)) |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+
+```
+
+# Distribution of correlations
+
+```{r}
+
+p_distribution <- 
+  ggplot(data_correlations_and_n, aes(r)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_histogram(bins = 15) +
+  scale_x_continuous(breaks = breaks_width(0.1)) +
+  theme_classic() +
+  labs(x = expression(paste("Pearson's ", italic("r"))),
+       y = "Count")
+
+p_distribution
+
+ggsave("plots/p_distribution_of_correlations.pdf",
+       plot = p_distribution,
+       width = 7,
+       height = 5,
+       units = "in")
+
+```
+
+# Meta analysis
+
+## Model
+
+```{r}
+
+# fit meta
+fit <- data_effect_sizes |>
+  rma.mv(yi     = yi, 
+         V      = vi, 
+         random = ~ 1 | domain,
+         data   = _,
+         slab   = domain)
+
+# make predictions 
+predictions <-
+  predict(fit, digits = 5) %>%
+  as.data.frame() %>%
+  round_df(2) 
+
+# summarize results
+meta_effect <- 
+  paste0("Meta analysis: k = ", fit$k, 
+         ", r = ",  janitor::round_half_up(transf.ztor(predictions$pred), 2), 
+         ", 95% CI [", janitor::round_half_up(transf.ztor(predictions$ci.lb), 2), ", ", 
+         janitor::round_half_up(transf.ztor(predictions$ci.ub), 2), "]", 
+         ", 95% CR [", janitor::round_half_up(transf.ztor(predictions$pi.lb), 2), ", ", 
+         janitor::round_half_up(transf.ztor(predictions$pi.ub), 2), "]") 
+
+meta_heterogeneity <- 
+  paste0("Heterogeneity tests: Q(df = ", fit$k - 1, ") = ", janitor::round_half_up(fit$QE, 2), 
+         ", p ", ifelse(fit$QEp < 0.0001, "< .0001", paste0("= ", as.character(janitor::round_half_up(fit$QEp, 4)))),
+         ", tau^2 = ", janitor::round_half_up(fit$tau2, 4))
+
+```
+
+Meta effect: `r meta_effect`.
+
+Heterogeneity: `r meta_heterogeneity`.
+
+## Caterpillar plot
+
+```{r}
+
+metafor::forest(data_effect_sizes$yi, 
+                data_effect_sizes$vi,
+                #xlim = c(-0.5, 1.5), # adjust horizontal plot region limits
+                transf = transf.ztor,
+                xlab = expression(paste("Pearson's ", italic("r"))),
+                #at = c(-1, -0.75, -0.50, -0.25, 0, 0.25, 0.5, 0.75, 1),
+                #at = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+                order = "obs", # order by size of yi
+                slab = NA, 
+                annotate = FALSE, # remove study labels and annotations
+                efac = 0, # remove vertical bars at end of CIs
+                pch = 19, # changing point symbol to filled circle
+                col = "gray40", # change color of points/CIs
+                psize = 2, # increase point size
+                cex.lab = 1, cex.axis = 1, # increase size of x-axis title/labels
+                lty = c("solid", "blank")) # remove horizontal line at top of plot
+points(sort(transf.ztor(data_effect_sizes$yi)), 
+       nrow(data_effect_sizes):1, pch = 19, cex = 0.5) # draw points one more time to make them easier to see
+addpoly(fit, mlab = "", cex = 1, addcred = TRUE) # add summary polygon at bottom and text
+#text(0, -1, "RE Model", pos = 4, offset = 0, cex = 1)
+
+# write to disk for pdf plots
+write_csv(data_effect_sizes, "../../data/processed/data_effect_sizes.csv")
+
+```
+
+# Session info
+
+```{r}
+
+sessionInfo()
+
+```
+
