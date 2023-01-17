@@ -34,8 +34,13 @@ round_df <- function(df, n_digits = 3) {
   df %>% mutate_if(is.numeric, janitor::round_half_up, digits = n_digits)
 }
 
+round_df_trailing_zero <- function(df, n_digits = 3) {
+  df %>% mutate_if(is.numeric, function(x) sprintf(paste0("%.", n_digits, "f"), janitor::round_half_up(x, digits = n_digits)))
+}
+
 # create directory needed to save output
 dir.create("plots")
+dir.create("../../data/summary/")
 
 ```
 
@@ -56,7 +61,7 @@ data_scores <- read_csv("../../data/processed/data_scored.csv") |>
 
 ```
 
-# Descriptives
+# Sample sizes
 
 ```{r}
 
@@ -72,12 +77,52 @@ data_scores |>
 
 ```
 
+# Means and SDs
+
+```{r}
+
+data_means_and_sds <- data_scores |>
+  group_by(domain) |>
+  summarize(tt1_mean = mean(tt1),
+            tt1_sd = sd(tt1),
+            tt2_mean = mean(tt2),
+            tt2_sd = sd(tt2),
+            tt3_mean = mean(tt3),
+            tt3_sd = sd(tt3),
+            tt4_mean = mean(tt4),
+            tt4_sd = sd(tt4)) 
+
+# save to disk for others to use
+data_means_and_sds |>
+  write_csv("../../data/summary/data_means_and_sds.csv")
+
+# format mean and sd as "mean (sd)" and save to disk
+data_means_and_sds_formatted <- data_means_and_sds |>
+  round_df_trailing_zero(2) |>
+  mutate(tt1_mean_sd = paste0(tt1_mean, " (", tt1_sd, ")"),
+         tt2_mean_sd = paste0(tt1_mean, " (", tt2_sd, ")"),
+         tt3_mean_sd = paste0(tt1_mean, " (", tt3_sd, ")"),
+         tt4_mean_sd = paste0(tt1_mean, " (", tt4_sd, ")")) |>
+  select(Domain = domain,
+         `Trial type 1` = tt1_mean_sd,
+         `Trial type 2` = tt2_mean_sd,
+         `Trial type 3` = tt3_mean_sd,
+         `Trial type 4` = tt4_mean_sd)
+
+data_means_and_sds_formatted |>
+  kable() |>
+  kable_classic(full_width = FALSE) |>
+  add_header_above(c("", "Mean (SD)" = 4))
+
+write_csv(data_means_and_sds_formatted, "../../data/summary/data_means_and_sds_formatted.csv")
+
+```
+
 # Calculate correlations between the trial types
 
 ```{r}
 
 data_correlations <- data_scores |>
-  select(-id) |>
   group_by(domain) |>
   summarize(tt1_tt2 = cor(tt1, tt2),
             tt1_tt3 = cor(tt1, tt3),
@@ -90,16 +135,40 @@ data_correlations <- data_scores |>
                values_to = "r")
 
 data_n <- data_scores |>
-  select(-id) |>
   count(domain) 
 
 # combine dfs
 data_correlations_and_n <- data_correlations |>
   left_join(data_n, by = "domain")
 
+# save to disk for others to use
+data_correlations_and_n_formatted <- data_correlations_and_n |>
+  mutate(n = as.character(n)) |>
+  round_df_trailing_zero(2) |>
+  pivot_wider(names_from = trial_types, 
+              values_from = r,
+              names_prefix = "r_") |>
+  rename(Domain = domain,
+         N = n,
+         `Trial types 1 and 2` = r_tt1_tt2,
+         `Trial types 1 and 3` = r_tt1_tt3,
+         `Trial types 1 and 4` = r_tt1_tt4,
+         `Trial types 2 and 3` = r_tt2_tt3,
+         `Trial types 2 and 4` = r_tt2_tt4,
+         `Trial types 3 and 4` = r_tt3_tt4)
+
+data_correlations_and_n_formatted |>
+  kable() |>
+  kable_classic(full_width = FALSE) |>
+  add_header_above(c(" " = 2, "r" = 6))
+
+# write to disk
+write_csv(data_correlations_and_n, "../../data/summary/data_correlations_and_sample_sizes.csv")
+write_csv(data_correlations_and_n_formatted, "../../data/summary/data_correlations_and_sample_sizes_formatted.csv")
+
 ```
 
-### Calculate 95% Confidence Intervals on correlations
+# Calculate 95% Confidence Intervals on correlations
 
 ```{r fig.height=12, fig.width=6}
 
@@ -205,7 +274,8 @@ meta_effect <-
          ", 95% CI [", janitor::round_half_up(transf.ztor(predictions$ci.lb), 2), ", ", 
          janitor::round_half_up(transf.ztor(predictions$ci.ub), 2), "]", 
          ", 95% CR [", janitor::round_half_up(transf.ztor(predictions$pi.lb), 2), ", ", 
-         janitor::round_half_up(transf.ztor(predictions$pi.ub), 2), "]") 
+         janitor::round_half_up(transf.ztor(predictions$pi.ub), 2), "]",
+         ", p = ", fit$pval) 
 
 meta_heterogeneity <- 
   paste0("Heterogeneity tests: Q(df = ", fit$k - 1, ") = ", janitor::round_half_up(fit$QE, 2), 
