@@ -1,5 +1,5 @@
 ---
-title: "Are the IRAP trial types 'functionally independent'?"
+title: "Are the IRAP trial types independent?"
 author: "Ian Hussey"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:

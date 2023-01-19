@@ -11,9 +11,9 @@
 
 <meta name="author" content="Ian Hussey" />
 
-<meta name="date" content="2023-01-17" />
+<meta name="date" content="2023-01-19" />
 
-<title>Are the IRAP trial types ‘functionally independent’?</title>
+<title>Are the IRAP trial types independent?</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1891,10 +1891,9 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Are the IRAP trial types ‘functionally
-independent’?</h1>
+<h1 class="title toc-ignore">Are the IRAP trial types independent?</h1>
 <h4 class="author">Ian Hussey</h4>
-<h4 class="date">17 January 2023</h4>
+<h4 class="date">19 January 2023</h4>
 
 </div>
 
@@ -2259,38 +2258,37 @@ Valenced words
 <div id="means-and-sds" class="section level1">
 <h1>Means and SDs</h1>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data_means_and_sds <span class="ot">&lt;-</span> data_scores <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>id) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(domain) <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">tt1_mean =</span> <span class="fu">mean</span>(tt1),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_sd =</span> <span class="fu">sd</span>(tt1),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_mean =</span> <span class="fu">mean</span>(tt2),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_sd =</span> <span class="fu">sd</span>(tt2),</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_mean =</span> <span class="fu">mean</span>(tt3),</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_sd =</span> <span class="fu">sd</span>(tt3),</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt4_mean =</span> <span class="fu">mean</span>(tt4),</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt4_sd =</span> <span class="fu">sd</span>(tt4)) </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># save to disk for others to use</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>data_means_and_sds <span class="sc">|&gt;</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_csv</span>(<span class="st">&quot;../../data/summary/data_means_and_sds.csv&quot;</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># format mean and sd as &quot;mean (sd)&quot; and save to disk</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>data_means_and_sds_formatted <span class="ot">&lt;-</span> data_means_and_sds <span class="sc">|&gt;</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round_df_trailing_zero</span>(<span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tt1_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt1_sd, <span class="st">&quot;)&quot;</span>),</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt2_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt2_sd, <span class="st">&quot;)&quot;</span>),</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt3_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt3_sd, <span class="st">&quot;)&quot;</span>),</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt4_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt4_sd, <span class="st">&quot;)&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">Domain =</span> domain,</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 1</span><span class="st">`</span> <span class="ot">=</span> tt1_mean_sd,</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 2</span><span class="st">`</span> <span class="ot">=</span> tt2_mean_sd,</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 3</span><span class="st">`</span> <span class="ot">=</span> tt3_mean_sd,</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 4</span><span class="st">`</span> <span class="ot">=</span> tt4_mean_sd)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>data_means_and_sds_formatted <span class="sc">|&gt;</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;Mean (SD)&quot;</span> <span class="ot">=</span> <span class="dv">4</span>))</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(domain) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">tt1_mean =</span> <span class="fu">mean</span>(tt1),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_sd =</span> <span class="fu">sd</span>(tt1),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_mean =</span> <span class="fu">mean</span>(tt2),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_sd =</span> <span class="fu">sd</span>(tt2),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_mean =</span> <span class="fu">mean</span>(tt3),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_sd =</span> <span class="fu">sd</span>(tt3),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt4_mean =</span> <span class="fu">mean</span>(tt4),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt4_sd =</span> <span class="fu">sd</span>(tt4)) </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># save to disk for others to use</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>data_means_and_sds <span class="sc">|&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_csv</span>(<span class="st">&quot;../../data/summary/data_means_and_sds.csv&quot;</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># format mean and sd as &quot;mean (sd)&quot; and save to disk</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>data_means_and_sds_formatted <span class="ot">&lt;-</span> data_means_and_sds <span class="sc">|&gt;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round_df_trailing_zero</span>(<span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tt1_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt1_sd, <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt2_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt2_sd, <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt3_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt3_sd, <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">tt4_mean_sd =</span> <span class="fu">paste0</span>(tt1_mean, <span class="st">&quot; (&quot;</span>, tt4_sd, <span class="st">&quot;)&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">Domain =</span> domain,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 1</span><span class="st">`</span> <span class="ot">=</span> tt1_mean_sd,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 2</span><span class="st">`</span> <span class="ot">=</span> tt2_mean_sd,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 3</span><span class="st">`</span> <span class="ot">=</span> tt3_mean_sd,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial type 4</span><span class="st">`</span> <span class="ot">=</span> tt4_mean_sd)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>data_means_and_sds_formatted <span class="sc">|&gt;</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;Mean (SD)&quot;</span> <span class="ot">=</span> <span class="dv">4</span>))</span></code></pre></div>
 <table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -2923,46 +2921,44 @@ Valenced words
 <div id="calculate-correlations-between-the-trial-types" class="section level1">
 <h1>Calculate correlations between the trial types</h1>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_correlations <span class="ot">&lt;-</span> data_scores <span class="sc">|&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>id) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(domain) <span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">tt1_tt2 =</span> <span class="fu">cor</span>(tt1, tt2),</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_tt3 =</span> <span class="fu">cor</span>(tt1, tt3),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_tt4 =</span> <span class="fu">cor</span>(tt1, tt4),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_tt3 =</span> <span class="fu">cor</span>(tt2, tt3),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_tt4 =</span> <span class="fu">cor</span>(tt2, tt4),</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_tt4 =</span> <span class="fu">cor</span>(tt3, tt4)) <span class="sc">|&gt;</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>domain,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;trial_types&quot;</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;r&quot;</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>data_n <span class="ot">&lt;-</span> data_scores <span class="sc">|&gt;</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>id) <span class="sc">|&gt;</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(domain) </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># combine dfs</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n <span class="ot">&lt;-</span> data_correlations <span class="sc">|&gt;</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_n, <span class="at">by =</span> <span class="st">&quot;domain&quot;</span>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># save to disk for others to use</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n_formatted <span class="ot">&lt;-</span> data_correlations_and_n <span class="sc">|&gt;</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">as.character</span>(n)) <span class="sc">|&gt;</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round_df_trailing_zero</span>(<span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> trial_types, </span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> r,</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">names_prefix =</span> <span class="st">&quot;r_&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Domain =</span> domain,</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">N =</span> n,</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 2</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt2,</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 3</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt3,</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt4,</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 2 and 3</span><span class="st">`</span> <span class="ot">=</span> r_tt2_tt3,</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 2 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt2_tt4,</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 3 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt3_tt4)</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n_formatted <span class="sc">|&gt;</span></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">&quot; &quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;r&quot;</span> <span class="ot">=</span> <span class="dv">6</span>))</span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(domain) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">tt1_tt2 =</span> <span class="fu">cor</span>(tt1, tt2),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_tt3 =</span> <span class="fu">cor</span>(tt1, tt3),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt1_tt4 =</span> <span class="fu">cor</span>(tt1, tt4),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_tt3 =</span> <span class="fu">cor</span>(tt2, tt3),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt2_tt4 =</span> <span class="fu">cor</span>(tt2, tt4),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">tt3_tt4 =</span> <span class="fu">cor</span>(tt3, tt4)) <span class="sc">|&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>domain,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;trial_types&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;r&quot;</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>data_n <span class="ot">&lt;-</span> data_scores <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(domain) </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># combine dfs</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n <span class="ot">&lt;-</span> data_correlations <span class="sc">|&gt;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_n, <span class="at">by =</span> <span class="st">&quot;domain&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># save to disk for others to use</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n_formatted <span class="ot">&lt;-</span> data_correlations_and_n <span class="sc">|&gt;</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">as.character</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round_df_trailing_zero</span>(<span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> trial_types, </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> r,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">names_prefix =</span> <span class="st">&quot;r_&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Domain =</span> domain,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>         <span class="at">N =</span> n,</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 2</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt2,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 3</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt3,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 1 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt1_tt4,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 2 and 3</span><span class="st">`</span> <span class="ot">=</span> r_tt2_tt3,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 2 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt2_tt4,</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Trial types 3 and 4</span><span class="st">`</span> <span class="ot">=</span> r_tt3_tt4)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>data_correlations_and_n_formatted <span class="sc">|&gt;</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">&quot; &quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;r&quot;</span> <span class="ot">=</span> <span class="dv">6</span>))</span></code></pre></div>
 <table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -3917,8 +3913,9 @@ Valenced words
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># write to disk</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(data_correlations_and_n, <span class="st">&quot;../../data/summary/data_correlations_and_sample_sizes.csv&quot;</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(data_correlations_and_n_formatted, <span class="st">&quot;../../data/summary/data_correlations_and_sample_sizes_formatted.csv&quot;</span>)</span></code></pre></div>
-<div id="calculate-95-confidence-intervals-on-correlations" class="section level3">
-<h3>Calculate 95% Confidence Intervals on correlations</h3>
+</div>
+<div id="calculate-95-confidence-intervals-on-correlations" class="section level1">
+<h1>Calculate 95% Confidence Intervals on correlations</h1>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate variances</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># apply fischer&#39;s r-to-z transformations</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>data_effect_sizes <span class="ot">&lt;-</span> data_correlations_and_n <span class="sc">|&gt;</span></span>
@@ -4000,7 +3997,6 @@ percent_domains_with_one_or_more_significant_correlations
 </tbody>
 </table>
 </div>
-</div>
 <div id="distribution-of-correlations" class="section level1">
 <h1>Distribution of correlations</h1>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>p_distribution <span class="ot">&lt;-</span> </span>
@@ -4045,14 +4041,15 @@ percent_domains_with_one_or_more_significant_correlations
 <span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, 95% CI [&quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(<span class="fu">transf.ztor</span>(predictions<span class="sc">$</span>ci.lb), <span class="dv">2</span>), <span class="st">&quot;, &quot;</span>, </span>
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>         janitor<span class="sc">::</span><span class="fu">round_half_up</span>(<span class="fu">transf.ztor</span>(predictions<span class="sc">$</span>ci.ub), <span class="dv">2</span>), <span class="st">&quot;]&quot;</span>, </span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, 95% CR [&quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(<span class="fu">transf.ztor</span>(predictions<span class="sc">$</span>pi.lb), <span class="dv">2</span>), <span class="st">&quot;, &quot;</span>, </span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>         janitor<span class="sc">::</span><span class="fu">round_half_up</span>(<span class="fu">transf.ztor</span>(predictions<span class="sc">$</span>pi.ub), <span class="dv">2</span>), <span class="st">&quot;]&quot;</span>) </span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>meta_heterogeneity <span class="ot">&lt;-</span> </span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;Heterogeneity tests: Q(df = &quot;</span>, fit<span class="sc">$</span>k <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;) = &quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>QE, <span class="dv">2</span>), </span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, p &quot;</span>, <span class="fu">ifelse</span>(fit<span class="sc">$</span>QEp <span class="sc">&lt;</span> <span class="fl">0.0001</span>, <span class="st">&quot;&lt; .0001&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;= &quot;</span>, <span class="fu">as.character</span>(janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>QEp, <span class="dv">4</span>)))),</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, tau^2 = &quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>tau2, <span class="dv">4</span>))</span></code></pre></div>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>         janitor<span class="sc">::</span><span class="fu">round_half_up</span>(<span class="fu">transf.ztor</span>(predictions<span class="sc">$</span>pi.ub), <span class="dv">2</span>), <span class="st">&quot;]&quot;</span>,</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, p = &quot;</span>, fit<span class="sc">$</span>pval) </span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>meta_heterogeneity <span class="ot">&lt;-</span> </span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;Heterogeneity tests: Q(df = &quot;</span>, fit<span class="sc">$</span>k <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;) = &quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>QE, <span class="dv">2</span>), </span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, p &quot;</span>, <span class="fu">ifelse</span>(fit<span class="sc">$</span>QEp <span class="sc">&lt;</span> <span class="fl">0.0001</span>, <span class="st">&quot;&lt; .0001&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;= &quot;</span>, <span class="fu">as.character</span>(janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>QEp, <span class="dv">4</span>)))),</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;, tau^2 = &quot;</span>, janitor<span class="sc">::</span><span class="fu">round_half_up</span>(fit<span class="sc">$</span>tau2, <span class="dv">4</span>))</span></code></pre></div>
 <p>Meta effect: Meta analysis: k = 210, r = 0.21, 95% CI [0.16, 0.26],
-95% CR [-0.1, 0.48].</p>
+95% CR [-0.1, 0.48], p = 5.36440600784078e-13.</p>
 <p>Heterogeneity: Heterogeneity tests: Q(df = 209) = 356.48, p &lt;
 .0001, tau^2 = 0.</p>
 </div>
