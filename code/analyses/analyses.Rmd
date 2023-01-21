@@ -50,7 +50,7 @@ dir.create("../../data/summary/")
 
 data_scores <- read_csv("../../data/processed/data_scored.csv") |>
   # exclude follow up time-points and outlier participants
-  filter(timepoint == "baseline" & rt_outlier == FALSE) |>
+  filter(timepoint == 1 & met_performance_criteria == TRUE) |>
   # select only variables of interest
   select(id = unique_id,
          domain, 
