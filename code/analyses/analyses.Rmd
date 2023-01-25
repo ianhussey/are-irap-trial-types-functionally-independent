@@ -29,6 +29,9 @@ library(ggstance)
 library(scales) 
 library(janitor)
 
+# disable scientific notation
+options(scipen = 999)
+
 # function to round all numeric vars in a data frame
 round_df <- function(df, n_digits = 3) {
   df %>% mutate_if(is.numeric, janitor::round_half_up, digits = n_digits)
@@ -46,11 +49,13 @@ dir.create("../../data/summary/")
 
 # Data 
 
+Data taken from reliability meta-analysis, in both D scored format and permuted reliablity estimates from those D scores.
+
 ```{r}
 
 data_scores <- read_csv("../../data/processed/data_scored.csv") |>
   # exclude follow up time-points and outlier participants
-  filter(timepoint == 1 & met_performance_criteria == TRUE) |>
+  filter(timepoint == 1 & met_performance_criteria_typical == TRUE) |>
   # select only variables of interest
   select(id = unique_id,
          domain, 
@@ -58,6 +63,9 @@ data_scores <- read_csv("../../data/processed/data_scored.csv") |>
          tt2 = D_tt2,
          tt3 = D_tt3,
          tt4 = D_tt4)
+
+data_reliablity <- 
+  read_csv("../../data/processed/data_D_scores_internal_consistency_permuted_estimates_trial_types_modified.csv")
 
 ```
 
@@ -189,7 +197,7 @@ data_significance <- data_effect_sizes |>
          sig_label = ifelse(sig, "p < .05", "p > .05"))
 
 p_cis <- 
-  ggplot(data_significance, aes(r, fct_rev(domain), color = sig_label, group = trial_types)) +
+  ggplot(data_significance, aes(r, fct_rev(domain), color = sig_label, group = fct_rev(trial_types))) +
   geom_vline(xintercept = 0, linetype = "dashed") +
   geom_point(position = position_dodge(width = 0.75)) +
   ggstance::geom_linerangeh(aes(xmin = ci_lower, xmax = ci_upper), position = position_dodge(width = 0.75)) +
@@ -315,6 +323,32 @@ addpoly(fit, mlab = "", cex = 1, addcred = TRUE) # add summary polygon at bottom
 
 # write to disk for pdf plots
 write_csv(data_effect_sizes, "../../data/processed/data_effect_sizes.csv")
+
+```
+
+# Reliability
+
+```{r fig.height=12, fig.width=6}
+
+ggplot(data_reliablity, 
+       aes(y = transf.iabt(alpha), 
+           x = fct_rev(domain), 
+           group = fct_rev(trial_type),
+           color = between_trial_type_differences)) + 
+  geom_linerange(aes(ymin = transf.iabt(alpha_ci_lower), ymax = transf.iabt(alpha_ci_upper)),
+                 position = position_dodge(width = 0.75)) +
+  geom_point(position = position_dodge(width = 0.75)) +
+  coord_flip() +
+  xlab("Domain") +
+  ylab("Alpha") +
+  theme_linedraw() +
+  scale_color_viridis_d(begin = 0.3, end = 0.7) +
+  theme(legend.position = "bottom")
+
+data_reliablity |>
+  summarize(prop_between_trial_type_differences = janitor::round_half_up(mean(between_trial_type_differences), 2)) |>
+  kable() |>
+  kable_classic(full_width = FALSE)
 
 ```
 
