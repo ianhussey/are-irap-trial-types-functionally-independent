@@ -3,9 +3,10 @@ library(readr)
 library(metafor)
 
 # get data
-setwd("~/git/IRAP-critique/are the IRAP trial types distinct/code/analyses/plots/")
+setwd("~/git/independence-of-irap-trial-types/code/analyses/plots/")
 #fit_1 <- read_rds("fit_1.rds")
 data_es_1 <- read_csv("../../../data/processed/data_effect_sizes.csv")
+load("fit.Rdata")
 
 
 # caterpillar plot
@@ -32,7 +33,7 @@ metafor::forest(data_es_1$yi,
                 lty = c("solid", "blank")) # remove horizontal line at top of plot
 points(sort(transf.ztor(data_es_1$yi)), 
        nrow(data_es_1):1, pch = 19, cex = 0.5) # draw points one more time to make them easier to see
-addpoly(fit_1, mlab = "", cex = 1, addcred = TRUE) # add summary polygon at bottom and text
+addpoly(fit, mlab = "", cex = 1, addcred = TRUE) # add summary polygon at bottom and text
 #text(0, -1, "RE Model", pos = 4, offset = 0, cex = 1)
 
 p1 <- recordPlot()

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Ian Hussey" />
 
-<meta name="date" content="2023-01-25" />
+<meta name="date" content="2023-01-27" />
 
 <title>Are the IRAP trial types independent?</title>
 
@@ -1893,7 +1893,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Are the IRAP trial types independent?</h1>
 <h4 class="author">Ian Hussey</h4>
-<h4 class="date">25 January 2023</h4>
+<h4 class="date">27 January 2023</h4>
 
 </div>
 
@@ -4392,7 +4392,8 @@ percent_domains_with_one_or_more_significant_correlations
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#text(0, -1, &quot;RE Model&quot;, pos = 4, offset = 0, cex = 1)</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># write to disk for pdf plots</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(data_effect_sizes, <span class="st">&quot;../../data/processed/data_effect_sizes.csv&quot;</span>)</span></code></pre></div>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(data_effect_sizes, <span class="st">&quot;../../data/processed/data_effect_sizes.csv&quot;</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(fit, <span class="at">file =</span> <span class="st">&quot;plots/fit.RData&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="reliability" class="section level1">
