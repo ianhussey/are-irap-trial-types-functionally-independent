@@ -323,6 +323,7 @@ addpoly(fit, mlab = "", cex = 1, addcred = TRUE) # add summary polygon at bottom
 
 # write to disk for pdf plots
 write_csv(data_effect_sizes, "../../data/processed/data_effect_sizes.csv")
+save(fit, file = "plots/fit.RData")
 
 ```
 
